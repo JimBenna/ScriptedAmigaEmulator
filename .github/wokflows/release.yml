@@ -1,8 +1,11 @@
 name: Build release
 on:
   push:
-    tags:
-      - 'v*'  # Trigger on tags like v1.0.0, v2.1.3, etc.
+    branches:
+      - new_css
+#    tags:
+#      - 'v*'  # Trigger on tags like v1.0.0, v2.1.3, etc.
+
 
 permissions:
   contents: write  # Required to create releases
@@ -13,11 +16,6 @@ jobs:
     runs-on: ubuntu-slim
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
       - name: Checkout repository
         uses: https://github.com/actions/checkout@v7
         with:
@@ -61,48 +59,76 @@ jobs:
          with:
            github-token: ${{ secrets.TOKEN }}
            output-file: "false"  # Don't write to file, use output
-#          skip-version-file: true
-#          skip-commit: true
-#          skip-tag: true
+           skip-version-file: true
+           skip-commit: true
+           skip-tag: true
 
+# Generate a version number
+      - name: Compute version
+        id: version
+        run: |
+          git fetch --tags
+
+          LAST_TAG=$(git tag --sort=-v:refname | head -n 1)
+
+          if [ -z "$LAST_TAG" ]; then
+            LAST_TAG="v0.0.0"
+          fi
+
+          VERSION=${LAST_TAG#v}
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
+
+          LAST_COMMIT=$(git log -1 --pretty=%s)
+
+          if [[ "$LAST_COMMIT" == major:* ]]; then
+            MAJOR=$((MAJOR + 1))
+            MINOR=0
+            PATCH=0
+          elif [[ "$LAST_COMMIT" == minor:* ]]; then
+            MINOR=$((MINOR + 1))
+            PATCH=0
+          else
+            PATCH=$((PATCH + 1))
+          fi
+
+          echo "new_version=v${MAJOR}.${MINOR}.${PATCH}" >> $GITHUB_OUTPUT
+# Create a new GIT Tag.
+      - name: Create Git Tag
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+          git tag ${{ steps.version.outputs.new_version }}
+          git push origin ${{ steps.version.outputs.new_version }}
 
 # Create distributable archives
       - name: Create release archives
         run: |
-          # Create tarball for Unix systems
-          tar -czvf sae-${{ github.ref_name }}.tar.gz -C dist .
 
-          # Create zip for Windows users
-          zip -r sae-${{ github.ref_name }}.zip dist/
+# Create tarball for Unix systems
+          tar -czvf sae_release-${{ steps.version.outputs.new_version }}.tar.gz --exclude={.github/workflows,.git/*}
 
-      # Calculate checksums for verification
+# Create zip archive
+          zip -r sae_release-${{ steps.version.outputs.new_version }}.zip . -x ".git/*" -x ".github/workflows/*"
+
+# Calculate checksums for verification
       - name: Generate checksums
         run: |
           sha256sum sae-*.tar.gz sae-*.zip > checksums.txt
 
-
-      - name: Build and push
-        uses: https://github.com/docker/build-push-action@v7
-        with:
-          context: .
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          allow: network.host
-          network: host
-
-
-      # Create GitHub Release with all artifacts
+# Create GitHub Release with all artifacts
       - name: Create GitHub Release
         uses: https://github.com/softprops/action-gh-release@v3
         with:
+          tag_name: ${{ steps.version.outputs.new_version }}
           name: Release ${{ github.ref_name }}
           body: ${{ steps.changelog.outputs.changelog }}
           draft: false
-          prerelease: ${{ contains(github.ref_name, '-') }}  # Pre-release if tag has hyphen
+#          prerelease: ${{ contains(github.ref_name, '-') }}  # Pre-release if tag has hyphen
           files: |
-            sae-*.tar.gz
-            sae-*.zip
+            sae_release-${{ steps.version.outputs.new_version }}.tar.gz
+            sae_release-${{ steps.version.outputs.new_version }}.zip
             checksums.txt
+
 
 
