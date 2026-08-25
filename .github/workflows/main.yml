@@ -55,8 +55,8 @@ jobs:
 # Generate changelog from conventional commits
       - name: Generate changelog
         id: changelog
-         uses: TriPSs/conventional-changelog-action@v6
-         with:
+        uses: TriPSs/conventional-changelog-action@v6
+        with:
            github-token: ${{ secrets.TOKEN }}
            output-file: "false"  # Don't write to file, use output
            skip-version-file: true
