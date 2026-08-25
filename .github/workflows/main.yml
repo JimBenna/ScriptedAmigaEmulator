@@ -42,20 +42,20 @@ jobs:
 #      - run: echo "Github Workspace ${{ github.workspace }}"
 
       - name: auto minify files with different engines
-         uses: https://github.com/nizarmah/auto-minify@v3
+         uses: nizarmah/auto-minify@v3
          with:
            js_engine: 'uglify-js'
            css_engine: 'clean-css'
 
        - name: auto commit the minified files
-         uses: https://github.com/stefanzweifel/git-auto-commit-action@v5
+         uses: stefanzweifel/git-auto-commit-action@v5
          with:
            commit_message: "bot: Add auto minified files"
 
 # Generate changelog from conventional commits
       - name: Generate changelog
         id: changelog
-         uses: https://github.com/TriPSs/conventional-changelog-action@v6
+         uses: TriPSs/conventional-changelog-action@v6
          with:
            github-token: ${{ secrets.TOKEN }}
            output-file: "false"  # Don't write to file, use output
@@ -118,7 +118,7 @@ jobs:
 
 # Create GitHub Release with all artifacts
       - name: Create GitHub Release
-        uses: https://github.com/softprops/action-gh-release@v3
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ steps.version.outputs.new_version }}
           name: Release ${{ github.ref_name }}
