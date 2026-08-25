@@ -104,8 +104,8 @@ jobs:
 # Create distributable archives
       - name: Create release archives
         run: |
-        tar -czvf sae_release-${{ steps.version.outputs.new_version }}.tar.gz --exclude={.github/workflows,.git/*}
-        zip -r sae_release-${{ steps.version.outputs.new_version }}.zip . -x ".git/*" -x ".github/workflows/*"
+          tar -czvf sae_release-${{ steps.version.outputs.new_version }}.tar.gz --exclude={.github/workflows,.git/*}
+          zip -r sae_release-${{ steps.version.outputs.new_version }}.zip . -x ".git/*" -x ".github/workflows/*"
 # Calculate checksums for verification
       - name: Generate checksums
         run: |
