@@ -43,16 +43,6 @@ jobs:
         with:
            commit_message: "bot: Add auto minified files"
 
-# Generate changelog from conventional commits
-      - name: Generate changelog
-        id: changelog
-        uses: TriPSs/conventional-changelog-action@v6
-        with:
-           github-token: ${{ secrets.TOKEN }}
-           output-file: "false"  # Don't write to file, use output
-           skip-version-file: true
-           skip-commit: true
-           skip-tag: true
 
 # Generate a version number
       - name: Compute version
@@ -92,10 +82,21 @@ jobs:
           git tag ${{ steps.version.outputs.new_version }}
           git push origin ${{ steps.version.outputs.new_version }}
 
+# Generate changelog from conventional commits
+      - name: Generate changelog
+        id: changelog
+        uses: TriPSs/conventional-changelog-action@v6
+        with:
+#           github-token: ${{ secrets.TOKEN }}
+           output-file: "false"  # Don't write to file, use output
+           skip-version-file: true
+           skip-commit: true
+#           skip-tag: true
+
 # Create distributable archives
       - name: Create release archives
         run: |
-          tar -czvf sae_release-${{ steps.version.outputs.new_version }}.tar.gz --exclude={.github/workflows,.git/*}
+          tar --exclude=".github" --exclude=".git" -czvf sae_release-${{ steps.version.outputs.new_version }}.tar.gz
           zip -r sae_release-${{ steps.version.outputs.new_version }}.zip . -x ".git/*" -x ".github/workflows/*"
 # Calculate checksums for verification
       - name: Generate checksums
