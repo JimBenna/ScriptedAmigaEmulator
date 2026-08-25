@@ -1,0 +1,108 @@
+name: Build release
+on:
+  push:
+    tags:
+      - 'v*'  # Trigger on tags like v1.0.0, v2.1.3, etc.
+
+permissions:
+  contents: write  # Required to create releases
+  packages: write  # Required if publishing to GitHub Packages
+
+jobs:
+  release:
+    runs-on: ubuntu-slim
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Checkout repository
+        uses: https://github.com/actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Extract metadata
+        id: meta
+        uses: https://github.com/docker/metadata-action@v6
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=sha,prefix={{branch}}-
+#      - run: echo "The ${{ github.repository }} repository has been cloned to the runner."
+#      - run: echo "The reference is ${{ github.ref }}."
+#      - run: echo “Event Name ${{ github.event_name }}”
+#      - run: echo “Commit SHA ${{ github.sha }}”
+#      - run: echo “Repository ${{ github.repository }}”
+#      - run: echo “Actor ${{ github.actor }}”
+#      - run: echo “Branch/Tag ${{ github.ref }}”
+#      - run: echo “Workflow ${{ github.workflow }}”
+#      - run: echo "Registry ${{ env.REGISTRY }}"
+#      - run: echo "Image Name  ${{ env.IMAGE_NAME }}"
+#      - run: echo "Github Workspace ${{ github.workspace }}"
+
+      - name: auto minify files with different engines
+         uses: https://github.com/nizarmah/auto-minify@v3
+         with:
+           js_engine: 'uglify-js'
+           css_engine: 'clean-css'
+
+       - name: auto commit the minified files
+         uses: https://github.com/stefanzweifel/git-auto-commit-action@v5
+         with:
+           commit_message: "bot: Add auto minified files"
+
+# Generate changelog from conventional commits
+      - name: Generate changelog
+        id: changelog
+         uses: https://github.com/TriPSs/conventional-changelog-action@v6
+         with:
+           github-token: ${{ secrets.TOKEN }}
+           output-file: "false"  # Don't write to file, use output
+#          skip-version-file: true
+#          skip-commit: true
+#          skip-tag: true
+
+
+# Create distributable archives
+      - name: Create release archives
+        run: |
+          # Create tarball for Unix systems
+          tar -czvf sae-${{ github.ref_name }}.tar.gz -C dist .
+
+          # Create zip for Windows users
+          zip -r sae-${{ github.ref_name }}.zip dist/
+
+      # Calculate checksums for verification
+      - name: Generate checksums
+        run: |
+          sha256sum sae-*.tar.gz sae-*.zip > checksums.txt
+
+
+      - name: Build and push
+        uses: https://github.com/docker/build-push-action@v7
+        with:
+          context: .
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          allow: network.host
+          network: host
+
+
+      # Create GitHub Release with all artifacts
+      - name: Create GitHub Release
+        uses: https://github.com/softprops/action-gh-release@v3
+        with:
+          name: Release ${{ github.ref_name }}
+          body: ${{ steps.changelog.outputs.changelog }}
+          draft: false
+          prerelease: ${{ contains(github.ref_name, '-') }}  # Pre-release if tag has hyphen
+          files: |
+            sae-*.tar.gz
+            sae-*.zip
+            checksums.txt
+
+
