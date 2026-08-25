@@ -92,6 +92,7 @@ jobs:
           fi
 
           echo "new_version=v${MAJOR}.${MINOR}.${PATCH}" >> $GITHUB_OUTPUT
+
 # Create a new GIT Tag.
       - name: Create Git Tag
         run: |
@@ -99,13 +100,12 @@ jobs:
           git config user.email "github-actions@github.com"
           git tag ${{ steps.version.outputs.new_version }}
           git push origin ${{ steps.version.outputs.new_version }}
+
 # Create distributable archives
       - name: Create release archives
         run: |
-# Create tarball for Unix systems
-          tar -czvf sae_release-${{ steps.version.outputs.new_version }}.tar.gz --exclude={.github/workflows,.git/*}
-# Create zip archive
-          zip -r sae_release-${{ steps.version.outputs.new_version }}.zip . -x ".git/*" -x ".github/workflows/*"
+        tar -czvf sae_release-${{ steps.version.outputs.new_version }}.tar.gz --exclude={.github/workflows,.git/*}
+        zip -r sae_release-${{ steps.version.outputs.new_version }}.zip . -x ".git/*" -x ".github/workflows/*"
 # Calculate checksums for verification
       - name: Generate checksums
         run: |
