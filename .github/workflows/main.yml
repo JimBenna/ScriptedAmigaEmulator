@@ -96,7 +96,7 @@ jobs:
 # Create distributable archives
       - name: Create release archives
         run: |
-          tar --exclude="./.github" --exclude="./.git" --exclude="./.gitignore"-czvf sae_release-${{ steps.version.outputs.new_version }}.tar.gz ./sae/*.min.js ./images/* ./css/* ./index.js ./*.css ./*.htm ./*.html ./Makefile
+          tar -czvf sae_release-${{ steps.version.outputs.new_version }}.tar.gz ./sae/*.min.js ./images/* ./css/* ./*.js ./*.css ./*.htm ./*.html ./Makefile
           
           zip -r sae_release-${{ steps.version.outputs.new_version }}.zip . -x ".git/*" -x ".github/workflows/*"
 
