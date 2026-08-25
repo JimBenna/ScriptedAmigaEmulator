@@ -33,7 +33,8 @@ jobs:
 
       - name: auto minify files with different engines
         uses: nizarmah/auto-minify@v3
-#        with:
+        with:
+          directory: 'sae'
 #           js_engine: 'uglify-js'
 #           css_engine: 'clean-css'
 
