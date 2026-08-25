@@ -13,30 +13,29 @@ permissions:
 
 jobs:
   release:
-    runs-on: ubuntu-slim
-
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
         with:
           fetch-depth: 0
-#      - run: echo "The ${{ github.repository }} repository has been cloned to the runner."
-#      - run: echo "The reference is ${{ github.ref }}."
-#      - run: echo “Event Name ${{ github.event_name }}”
-#      - run: echo “Commit SHA ${{ github.sha }}”
-#      - run: echo “Repository ${{ github.repository }}”
-#      - run: echo “Actor ${{ github.actor }}”
-#      - run: echo “Branch/Tag ${{ github.ref }}”
-#      - run: echo “Workflow ${{ github.workflow }}”
-#      - run: echo "Registry ${{ env.REGISTRY }}"
-#      - run: echo "Image Name  ${{ env.IMAGE_NAME }}"
-#      - run: echo "Github Workspace ${{ github.workspace }}"
+      - run: echo "The ${{ github.repository }} repository has been cloned to the runner."
+      - run: echo "The reference is ${{ github.ref }}."
+      - run: echo “Event Name ${{ github.event_name }}”
+      - run: echo “Commit SHA ${{ github.sha }}”
+      - run: echo “Repository ${{ github.repository }}”
+      - run: echo “Actor ${{ github.actor }}”
+      - run: echo “Branch/Tag ${{ github.ref }}”
+      - run: echo “Workflow ${{ github.workflow }}”
+      - run: echo "Registry ${{ env.REGISTRY }}"
+      - run: echo "Image Name  ${{ env.IMAGE_NAME }}"
+      - run: echo "Github Workspace ${{ github.workspace }}"
 
       - name: auto minify files with different engines
         uses: nizarmah/auto-minify@v3
-        with:
-           js_engine: 'uglify-js'
-           css_engine: 'clean-css'
+#        with:
+#           js_engine: 'uglify-js'
+#           css_engine: 'clean-css'
 
       - name: auto commit the minified files
         uses: stefanzweifel/git-auto-commit-action@v5
