@@ -7,3 +7,4 @@ db/demos/index.htm
 *.bin
 scriptedamigaemulator.js
 scriptedamigaemulator.js.map
+.DS_Store
