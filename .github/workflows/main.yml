@@ -48,12 +48,12 @@ jobs:
 
 # To compile the javascript a lot of errors have to be corrected in several files.
 # Until then, following lines have been commented
-#      - name: Compile project
-#        run: make
+      - name: Compile project
+        run: make
 
-#      - name: Check computed files
-#        run: |
-#          test -f sae/scriptedamigaemulator.js
+      - name: Check computed files
+        run: |
+          test -f scriptedamigaemulator.js
 #          test -f sae/scriptedamigaemulator.js.map
 
 #      - name: auto minify files with different engines
