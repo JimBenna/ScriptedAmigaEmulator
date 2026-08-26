@@ -42,13 +42,13 @@ jobs:
 
       - name: Installer Closure Compiler
         run: npm install --global google-closure-compiler
-        
+
 # To compile the javascript a lot of errors have to be corrected in several files.
 # Until then, following lines have been commented
-      - name: Compile project
+#      - name: Compile project
 #        run: make
 
-      - name: Check computed files
+#      - name: Check computed files
 #        run: |
 #          test -f sae/scriptedamigaemulator.js
 #          test -f sae/scriptedamigaemulator.js.map
