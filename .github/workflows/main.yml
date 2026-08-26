@@ -1,10 +1,10 @@
 name: Build release
 on:
   push:
-    branches:
-      - new_css
-#    tags:
-#      - 'v*'  # Trigger on tags like v1.0.0, v2.1.3, etc.
+#    branches:
+#      - new_css
+    tags:
+      - 'v*'  # Trigger on tags like v1.0.0, v2.1.3, etc.
 
 
 permissions:
@@ -36,22 +36,20 @@ jobs:
         with:
           node-version: 24
           package-manager-cache: false
-#          cache: 'npm'
 
-      - name: Installer les dépendances
-        run: npm ci
+      - name: Installer npm 12.0.2
+        run: npm install --global npm@12.0.2
 
-      - name: Installer Make
-        run: sudo apt-get update && sudo apt-get install -y make
+      - name: Installer Closure Compiler
+        run: npm install --global google-closure-compiler
 
-      - name: Générer le fichier JavaScript
-        run: make scriptedamigaemulator.js
+      - name: Compiler le projet
+        run: make
 
       - name: Vérifier les fichiers générés
         run: |
-          test -f scriptedamigaemulator.js
-          test -f scriptedamigaemulator.js.map
-          wc -c scriptedamigaemulator.js scriptedamigaemulator.js.map
+          test -f sae/scriptedamigaemulator.js
+          test -f sae/scriptedamigaemulator.js.map
 
       - name: auto minify files with different engines
         uses: nizarmah/auto-minify@v3
