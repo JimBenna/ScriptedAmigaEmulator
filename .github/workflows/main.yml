@@ -106,15 +106,25 @@ jobs:
           git push origin ${{ steps.version.outputs.new_version }}
 
 # Generate changelog from conventional commits
-      - name: Generate changelog
-        id: changelog
-        uses: TriPSs/conventional-changelog-action@v6
-        with:
+# This action will bump version, tag commit and generate a changelog with conventional commits.
+#      - name: Generate changelog
+#        id: changelog
+#        uses: TriPSs/conventional-changelog-action@v6
+#        with:
 #           github-token: ${{ secrets.TOKEN }}
-           output-file: "false"  # Don't write to file, use output
-           skip-version-file: true
+#           output-file: "false"  # Don't write to file, use output
+#           skip-version-file: true
 #           skip-commit: true
 #           skip-tag: true
+
+# Generate changelog from conventional commits
+# GitHub action that builds your release notes / changelog fast, simple and exactly the way you want.
+
+      - name: Build Changelog
+        id: github_release
+        uses: mikepenz/release-changelog-builder-action@v6
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 # Create distributable archives
       - name: Create release archives
@@ -136,8 +146,10 @@ jobs:
 #          name: Release ${{ github.ref_name }}
 #          body: ${{ steps.changelog.outputs.changelog }}
           tag_name: ${{ steps.version.outputs.new_version }}          
-          name: ${{ steps.changelog.outputs.tag }}
-          body: ${{steps.changelog.outputs.clean_changelog}}
+#          name: ${{ steps.changelog.outputs.tag }}
+          name: sae release version ${{ steps.version.outputs.new_version }}            
+          body: ${{steps.github_release.outputs.changelog}}          
+#          body: ${{steps.changelog.outputs.clean_changelog}}
           draft: false
           prerelease: false
           files: |
