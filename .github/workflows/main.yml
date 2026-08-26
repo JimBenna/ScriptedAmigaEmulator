@@ -41,8 +41,8 @@ jobs:
 
       - name: auto commit the minified files
         uses: stefanzweifel/git-auto-commit-action@v7
-        with:
-           commit_message: "bot: Add auto minified files"
+#        with:
+#           commit_message: "bot: Add auto minified files"
 
 
 # Generate a version number
