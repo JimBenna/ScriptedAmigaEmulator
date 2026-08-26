@@ -189,7 +189,8 @@ const SAEC_info = (function() {
 		while (true) {
 			try {
 				var data = new Uint8Array(size);
-				delete data;
+/*				delete data; */
+				data = null;
 				info.memory.maxSize = size;
 			} catch (e) {
 				break;
