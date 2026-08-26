@@ -55,7 +55,10 @@ jobs:
         run: |
           test -f sae/scriptedamigaemulator.js
 #          test -f sae/scriptedamigaemulator.js.map
-
+      - name: auto commit the merged files into scriptedamigaemulator.js
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+           commit_message: "[BOT] : Merged all javascript files into one"
 #      - name: auto minify files with different engines
 #        uses: nizarmah/auto-minify@v3
 #        with:
