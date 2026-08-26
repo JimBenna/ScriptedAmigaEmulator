@@ -32,9 +32,9 @@ jobs:
 #      - run: echo "Github Workspace ${{ github.workspace }}"
 
       - name: Installer Node.js
-        uses: actions/setup-node@latest
+        uses: actions/setup-node@v7
         with:
-          node-version: 20
+          node-version: 24
           cache: npm
 
       - name: Installer les dépendances
