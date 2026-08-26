@@ -53,7 +53,7 @@ jobs:
 
       - name: Check computed files
         run: |
-          test -f scriptedamigaemulator.js
+          test -f sae/scriptedamigaemulator.js
 #          test -f sae/scriptedamigaemulator.js.map
 
 #      - name: auto minify files with different engines
