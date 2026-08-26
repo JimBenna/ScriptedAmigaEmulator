@@ -149,7 +149,7 @@ jobs:
 #          body: ${{ steps.changelog.outputs.changelog }}
           tag_name: ${{ steps.version.outputs.new_version }}          
 #          name: ${{ steps.changelog.outputs.tag }}
-          name: sae release version ${{ steps.version.outputs.new_version }}            
+          name: sae ${{ steps.version.outputs.new_version }}            
           body: ${{steps.github_release.outputs.changelog}}          
 #          body: ${{steps.changelog.outputs.clean_changelog}}
           draft: false
