@@ -105,17 +105,18 @@ jobs:
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git tag ${{ steps.version.outputs.new_version }}
+          git tag ${{ github.ref_name }}
           git push origin ${{ steps.version.outputs.new_version }}
-
+#          git tag ${{ steps.version.outputs.new_version }}
+          
 # Generate changelog from conventional commits
 # This action will bump version, tag commit and generate a changelog with conventional commits.
-#      - name: Generate changelog
-#        id: changelog
-#        uses: TriPSs/conventional-changelog-action@v6
-#        with:
+      - name: Generate changelog
+        id: changelog
+        uses: TriPSs/conventional-changelog-action@v6
+        with:
 #           github-token: ${{ secrets.TOKEN }}
-#           output-file: "false"  # Don't write to file, use output
+           output-file: "false"  # Don't write to file, use output
 #           skip-version-file: true
 #           skip-commit: true
 #           skip-tag: true
@@ -123,18 +124,18 @@ jobs:
 # Generate changelog from conventional commits
 # GitHub action that builds your release notes / changelog fast, simple and exactly the way you want.
 
-      - name: Build Changelog
-        id: github_release
-        uses: mikepenz/release-changelog-builder-action@v6
+#      - name: Build Changelog
+#        id: github_release
+#        uses: mikepenz/release-changelog-builder-action@v6
 #        env:
 #          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 # Create distributable archives
       - name: Create release archives
         run: |
-          tar -czvf sae_release-${{ steps.version.outputs.new_version }}.tar.gz ./js/*.min.js ./images/* ./css/* ./*.html ./Makefile
+          tar -czvf sae_release-${{ steps.version.outputs.new_version }}.tar.gz ./sae/*.js ./images/* ./css/* ./*.html ./Makefile
           
-          zip -r sae_release-${{ steps.version.outputs.new_version }}.zip ./js/*.min.js ./images/* ./css/* ./*.html ./Makefile
+          zip -r sae_release-${{ steps.version.outputs.new_version }}.zip ./sae/*.js ./images/* ./css/* ./*.html ./Makefile
 
 # Calculate checksums for verification
       - name: Generate checksums
@@ -145,14 +146,14 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v3
         with:
-#          tag_name: ${{ steps.changelog.outputs.tag }}
+          tag_name: ${{ steps.changelog.outputs.tag }}
 #          name: Release ${{ github.ref_name }}
 #          body: ${{ steps.changelog.outputs.changelog }}
-          tag_name: ${{ steps.version.outputs.new_version }}          
+#          tag_name: ${{ steps.version.outputs.new_version }}          
 #          name: ${{ steps.changelog.outputs.tag }}
           name: sae ${{ steps.version.outputs.new_version }}            
-          body: ${{steps.github_release.outputs.changelog}}          
-#          body: ${{steps.changelog.outputs.clean_changelog}}
+#          body: ${{steps.github_release.outputs.changelog}}          
+          body: ${{steps.changelog.outputs.clean_changelog}}
           draft: false
           prerelease: false
           files: |
